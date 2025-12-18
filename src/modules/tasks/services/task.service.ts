@@ -1,5 +1,3 @@
-import type { TaskPriority, TaskStatus } from "../../../generated/prisma";
-
 import { AppError } from "../../../middleware/errorHandler";
 import { getIo } from "../../../socket/io";
 import { userRoom } from "../../../socket/auth";
@@ -24,8 +22,8 @@ export class TaskService {
       title: dto.title,
       description: dto.description,
       dueDate: new Date(dto.dueDate),
-      priority: dto.priority as TaskPriority,
-      status: dto.status as TaskStatus,
+      priority: dto.priority,
+      status: dto.status,
       creatorId: userId,
       assignedToId: dto.assignedToId ?? null,
     });
@@ -49,8 +47,8 @@ export class TaskService {
   list(userId: string, query: ListTasksQueryDto) {
     return this.repo.listVisible({
       userId,
-      ...(query.status ? { status: query.status as TaskStatus } : {}),
-      ...(query.priority ? { priority: query.priority as TaskPriority } : {}),
+      ...(query.status ? { status: query.status } : {}),
+      ...(query.priority ? { priority: query.priority } : {}),
       ...(query.sortDueDate ? { sortDueDate: query.sortDueDate } : {}),
     });
   }
@@ -83,8 +81,8 @@ export class TaskService {
     if (dto.title !== undefined) data.title = dto.title;
     if (dto.description !== undefined) data.description = dto.description;
     if (dto.dueDate !== undefined) data.dueDate = new Date(dto.dueDate);
-    if (dto.priority !== undefined) data.priority = dto.priority as TaskPriority;
-    if (dto.status !== undefined) data.status = dto.status as TaskStatus;
+    if (dto.priority !== undefined) data.priority = dto.priority;
+    if (dto.status !== undefined) data.status = dto.status;
     if (dto.assignedToId !== undefined) data.assignedToId = dto.assignedToId;
 
     const updated = await this.repo.update(taskId, data);

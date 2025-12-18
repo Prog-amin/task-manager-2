@@ -1,4 +1,3 @@
-import type { TaskPriority, TaskStatus } from "../../../generated/prisma";
 import { prisma } from "../../../lib/prisma";
 
 export class TaskRepository {
@@ -6,8 +5,8 @@ export class TaskRepository {
     title: string;
     description: string;
     dueDate: Date;
-    priority: TaskPriority;
-    status: TaskStatus;
+    priority: string;
+    status: string;
     creatorId: string;
     assignedToId?: string | null;
   }) {
@@ -43,12 +42,11 @@ export class TaskRepository {
 
   listVisible(params: {
     userId: string;
-    status?: TaskStatus;
-    priority?: TaskPriority;
+    status?: string;
+    priority?: string;
     sortDueDate?: "asc" | "desc";
   }) {
-    type FindManyArgs = NonNullable<Parameters<typeof prisma.task.findMany>[0]>;
-    const where: NonNullable<FindManyArgs["where"]> = {
+    const where: any = {
       OR: [{ creatorId: params.userId }, { assignedToId: params.userId }],
     };
     if (params.status) where.status = params.status;
@@ -70,8 +68,8 @@ export class TaskRepository {
     title?: string;
     description?: string;
     dueDate?: Date;
-    priority?: TaskPriority;
-    status?: TaskStatus;
+    priority?: string;
+    status?: string;
     assignedToId?: string | null;
   }) {
     return prisma.task.update({
