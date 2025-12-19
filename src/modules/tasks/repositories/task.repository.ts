@@ -1,3 +1,5 @@
+import type { Prisma } from "@prisma/client";
+
 import { prisma } from "../../../lib/prisma";
 
 export class TaskRepository {
@@ -15,8 +17,8 @@ export class TaskRepository {
         title: data.title,
         description: data.description,
         dueDate: data.dueDate,
-        priority: data.priority,
-        status: data.status,
+        priority: data.priority as any,
+        status: data.status as any,
         creatorId: data.creatorId,
         assignedToId: data.assignedToId ?? null,
       },
@@ -46,11 +48,11 @@ export class TaskRepository {
     priority?: string;
     sortDueDate?: "asc" | "desc";
   }) {
-    const where: any = {
+    const where: Prisma.TaskWhereInput = {
       OR: [{ creatorId: params.userId }, { assignedToId: params.userId }],
     };
-    if (params.status) where.status = params.status;
-    if (params.priority) where.priority = params.priority;
+    if (params.status) where.status = params.status as any;
+    if (params.priority) where.priority = params.priority as any;
 
     return prisma.task.findMany({
       where,
@@ -74,7 +76,7 @@ export class TaskRepository {
   }) {
     return prisma.task.update({
       where: { id: taskId },
-      data,
+      data: data as any,
       include: {
         creator: { select: { id: true, email: true, name: true } },
         assignedTo: { select: { id: true, email: true, name: true } },
